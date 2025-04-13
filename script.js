@@ -3,10 +3,28 @@
 ///////////////////////////////////////
 // Modal window
 
+
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+
+const slides = document.querySelectorAll('.slide')
+const dots = document.querySelector('.dots')
+
+const learnMore = document.querySelector(".btn--scroll-to");
+
+const navBar = document.querySelector(".nav")
+const navButtons = document.querySelectorAll(".nav__link");
+
+const header = document.querySelector(".header")
+
+const operationTabs = document.querySelectorAll(".operations__tab")
+const operationContents = document.querySelectorAll(".operations__content")
+
+const images = document.querySelectorAll('.features__img')
+
+const allSections = document.querySelectorAll('.section')
 
 const openModal = function () {
   modal.classList.remove('hidden');
@@ -30,14 +48,9 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-const navBar = document.querySelector(".nav")
-const learnMore = document.querySelector(".btn--scroll-to");
-const navButtons = document.querySelectorAll(".nav__link");
-
-const header = document.querySelector(".header")
-const section1 = document.getElementById("section--1")
-const section2 = document.getElementById("section--2")
-const section3 = document.getElementById("section--3")
+////////////////////////////////////////////////////////////////////////////////////////
+// Navbar Links Hovering And Smooth Scrolling
+////////////////////////////////////////////////////////////////////////////////////////
 
 const scrollFromTo = (from, to) => {
    from.addEventListener("click", e => {
@@ -57,8 +70,28 @@ navButtons.forEach(button => {
   scrollFromTo(button, document.getElementById(id.slice(1)))
 })
 
-const operationTabs = document.querySelectorAll(".operations__tab")
-const operationContents = document.querySelectorAll(".operations__content")
+navBar.addEventListener('mouseover', (e) => {
+  if (e.target.classList.contains('nav__link'))
+  {
+    navButtons.forEach(link => {
+      link.style.opacity = '0.5';
+    })
+    e.target.style.opacity = '1';
+  }
+})
+
+navBar.addEventListener('mouseout', (e) => {
+  if (e.target.classList.contains('nav__link'))
+  {
+    navButtons.forEach(link => {
+      link.style.opacity = '1';
+    })
+  }
+})
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Toggling Tabs And Contents
+////////////////////////////////////////////////////////////////////////////////////////
 
 const disableOperationActive = (list, activeOption) => {
   list.forEach(item => {
@@ -80,6 +113,10 @@ operationTabs.forEach(tab => {
     })
   })
 })
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Sticky Navbar
+////////////////////////////////////////////////////////////////////////////////////////
 
 const toggleStickyNav = (entries) => {
   const [entry] = entries;
@@ -103,6 +140,10 @@ const observerHeader = new IntersectionObserver(toggleStickyNav, stickyNavThresh
 
 observerHeader.observe(header);
 
+////////////////////////////////////////////////////////////////////////////////////////
+// Section Animation
+////////////////////////////////////////////////////////////////////////////////////////
+
 const toggleSection = (entries, observer) => {
   entries.forEach(entry => {
     if (entry.isIntersecting)
@@ -120,10 +161,13 @@ const sectionThreshold = {
 
 const observerSection = new IntersectionObserver(toggleSection, sectionThreshold)
 
-const allSections = document.querySelectorAll('.section')
 allSections.forEach(section => {
   observerSection.observe(section)
 })
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Lazy Loading Images
+////////////////////////////////////////////////////////////////////////////////////////
 
 const loadImage = (entries, observer) => {
   entries.forEach(entry => {
@@ -144,14 +188,13 @@ const imageThreshold = {
 
 const observerImage = new IntersectionObserver(loadImage, imageThreshold)
 
-const images = document.querySelectorAll('.features__img')
-
 images.forEach(image => {
   observerImage.observe(image)
 })
 
-const slides = document.querySelectorAll('.slide')
-const dots = document.querySelector('.dots')
+////////////////////////////////////////////////////////////////////////////////////////
+// Slider
+////////////////////////////////////////////////////////////////////////////////////////
 
 let currSlide = 0;
 
@@ -170,31 +213,39 @@ slides.forEach((slide, index) => {
 
 const btnSliderRight = document.querySelector('.slider__btn--right')
 const btnSliderLeft = document.querySelector('.slider__btn--left')
+const allDots = document.querySelectorAll('.dots__dot')
+
+const updateDots = () => {
+  allDots.forEach(dotInactive => {
+    dotInactive.classList.remove('dots__dot--active')
+  })
+  allDots[currSlide].classList.add('dots__dot--active')
+}
+
+updateDots();
 
 const prevSlide = () => {
   currSlide = (--currSlide + 3) % 3
   moveSlides(slides)
+  updateDots()
 }
 
 const nextSlide = () => {
   currSlide = ++currSlide % 3;
   moveSlides(slides)
+  updateDots()
 }
-
-btnSliderRight.addEventListener("click", nextSlide)
-btnSliderLeft.addEventListener("click", prevSlide)
-
-const allDots = document.querySelectorAll('.dots__dot')
-
-allDots[currSlide].classList.add('dots__dot--active')
 
 allDots.forEach((dot, index) => {
   dot.addEventListener('click', () => {
     currSlide = index;
     moveSlides(slides);
-    allDots.forEach(dotInactive => {
-      dotInactive.classList.remove('dots__dot--active')
-    })
-    allDots[index].classList.add('dots__dot--active')
+    updateDots()
   })
 })
+
+btnSliderRight.addEventListener("click", nextSlide)
+btnSliderLeft.addEventListener("click", prevSlide)
+
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
